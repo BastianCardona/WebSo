@@ -70,7 +70,7 @@ st.markdown(
 # ======================
 tabs = st.tabs(
     [
-        "📚 Conceptos Básicos",
+        "📚 Practica de sistemas de archivos",
         "🪟 Windows",
         "🐧 Linux",
         "🔀 Comparación y Compatibilidad",
@@ -94,36 +94,94 @@ la integridad, seguridad y organización de los datos. Aquí se explican las má
     )
 
     # Imagen del mapa conceptual
-    st.subheader("Mapa Conceptual General")
+    # st.subheader("Mapa Conceptual General")
     # st.image()
 
     st.subheader("🧾 Journaling")
-    st.write("""
-El journaling permite registrar las operaciones antes de aplicarlas.
-Esto evita corrupción de datos en caso de apagados inesperados.
-""")
-    st.code("Ejemplo: NTFS, ext4 usan journaling")
+    st.write(
+        "El journaling es una técnica que usan los SO la cual permite registrar cambios pendientes en un registro diario antes de aplicarlos al sistema de archivos principal. Este mecanismo asegura que ante un fallo de energía, un error del sistema o apagón inesperado el sistema de archivos pueda recuperarse de manera rápida y con el menor riesgo posible de que los archivos se corrompan."
+    )
+    colum1, colum2 = st.columns(2)
 
-    st.subheader("🔐 Encriptación")
-    st.write("""
-Muchos sistemas de archivos permiten cifrar datos para protegerlos.
-Esto evita que usuarios no autorizados accedan a la información.
-""")
-    st.code("Ejemplo: Windows EFS, Linux LUKS")
+    with colum1:
+        st.markdown(
+            "**Linux**  \nLinux usa ext4 journaling.  \nPuedes ver si un disco usa journaling:"
+        )
+        st.code("sudo tune2fs -l /dev/sdX1 | grep features")
+        st.write(
+            "Con este comando puedes forzar un chequeo del disco en caso de que falle"
+        )
+        st.code("sudo fsck /dev/sdX1")
+        st.write(
+            "Puedes simular un fallo (sin apagar, de forma controlada) montando y desmontando de golpe:"
+        )
+        st.code(
+            "sudo mount /dev/sdX1 /mnt/test\nsudo umount -l /mnt/test\nsudo fsck /dev/sdX1"
+        )
 
-    st.subheader("📁 Propiedades de Archivos y Directorios")
-    st.write("""
-Incluyen permisos, atributos especiales, dueño, grupo y modos de acceso.
-Linux usa permisos (rwx) y Windows usa ACLs con más granularidad.
-""")
+    with colum2:
+        st.markdown(
+            "**Windows**  \nWindows usa NTFS journaling.  \nPuedes verificar el disco:"
+        )
+        st.code("chkdsk C:")
+        st.write("O repararlo:")
+        st.code("chkdsk C: /f /r")
+
+    st.subheader("🔐 Modificación de permisos")
+    st.write(
+        "La modificación de permisos es el proceso de gestionar y cambiar los derechos de acceso que usuarios o grupos tienen sobre archivos, carpetas o recursos del sistema."
+    )
+    li, wi = st.columns(2)
+    with li:
+        st.markdown(
+            "**Linux**   \nLinux usa permisos de rwx (lectura, escritura y ejecución) para los usuarios o grupos.  \nPara ver permisos:"
+        )
+        st.code("ls -l")
+        st.write("Crear un archivo:")
+        st.code("touch archivo.txt")
+        st.write("Cambiar permisos (con este damos acceso total al usuario):")
+        st.code("chmod 700 archivo.txt")
+        st.write("Dar permiso de lectura al grupo:")
+        st.code("chmod g+r archivo.txt")
+        st.write("Permisos numéricos (combinados):")
+        st.code("chmod 754 archivo.txt")
+
+    with wi:
+        st.markdown(
+            "**Windows**  \nWindows usa ACLs (Access Control Lists). Son más avanzadas y permiten permisos específicos a usuarios/grupos.  \nVer permisos en PowerShell:"
+        )
+        st.code("Get-Acl archivo.txt")
+        st.write("Crear un archivo:")
+        st.code("echo 'Hola' > archivo.txt")
+        st.write("Asignar permisos (al usuario actual):")
+        st.code("icacls archivo.txt /grant %USERNAME%:F")
+        st.write("Dar solo lectura:")
+        st.code("icacls archivo.txt /grant %USERNAME%:R")
+        st.write("Quitar un permiso:")
+        st.code("icacls archivo.txt /remove:g %USERNAME%")
+
+    st.subheader("📁 Comprension y atributos")
+    st.write(
+        "Es el conjunto de métodos y estructuras que utiliza el SO para: organizar, almacenar, recuperar y gestionar los datos en dispositivos de almacenamiento como SSD o USB."
+    )
     colu1, colu2 = st.columns(2)
     with colu1:
-        st.write("**Linux**")
-        st.code("chmod 755 archivo")
+        st.markdown("**Linux**  \nVer atributos de un archivo:")
+        st.code("lsattr archivo.txt")
+        st.write("Comprimir un archivo:")
+        st.code("gzip archivo.txt")
+        st.write("Descomprimir:")
+        st.code("gunzip archivo.txt.gz")
+        st.write("Crear un :red[.zip]:")
+        st.code("zip archivo.zip archivo.txt")
 
     with colu2:
-        st.write("**Windows**")
-        st.code("icacls archivo /grant Usuario:F")
+        st.markdown("**Windows**  \nVer atributos de un archivo:")
+        st.code("Get-Item archivo.txt | Format-List *")
+        st.write("Comprimir desde PowerShell:")
+        st.code("Compress-Archive archivo.txt archivo.zip")
+        st.write("Descomprimir:")
+        st.code("Expand-Archive archivo.zip -DestinationPath carpeta")
 
     st.subheader("➕ Operaciones Comunes")
     st.write("""
@@ -144,7 +202,7 @@ de archivos deben gestionar eficientemente.
         st.code("cp pepe.txt pepe1.txt")
         st.image("linux/copiar.webp")
         st.write(
-            "Para mover un archivo a otro directorio usamos **mv**, en este caso creamos con touch primero un subdirectorio y lo movemos"
+            "Para mover un archivo a otro directorio usamos **mv**, en este caso creamos con mkdir primero un subdirectorio y lo movemos"
         )
         st.code("mkdir sub_prueba")
         st.image("linux/crearmover.webp")
@@ -156,12 +214,26 @@ de archivos deben gestionar eficientemente.
 
     with col2:
         st.write("**Windows (CMD):**")
-        st.write("Para copiar un archivo a un nuevo archivo:")
-        st.code("copy archivo1 archivo2")
-        st.write("Para mover un archivo a otro directorio:")
-        st.code("move archivo carpeta")
-        st.write("Para eliminar un archivo:")
-        st.code("del archivo")
+        st.write(
+            "En windows a diferencia de linux mostramos directorios con **dir**, allí con *mkdir* creamos una carpeta de prueba y con **echo** creamos un archivo **(recuerda ejecutar los comandos uno por uno)**"
+        )
+        st.code("mkdir prueba\ncd prueba\ndir")
+        st.image("windows/crearcarpeta.webp")
+        st.write("Para copiar un archivo a un nuevo archivo comenzamos con **copy**")
+        st.code("copy pepe.txt pepe1.txt\ndir")
+        st.image("windows/copiar.webp")
+        st.write(
+            "Para mover un archivo a otro directorio usamos **move**, en este caso creamos con mkdir primero un subdirectorio y lo movemos"
+        )
+        st.code("mkdir sub_prueba\ncd sub_prueba")
+        st.image("windows/crearmover.webp")
+        st.code("cd ..\nmove pepe.txt pepe1.txt\ncd sub_prueba\n")
+        st.image("windows/eliminar.webp")
+        st.write(
+            "Finalmente con **del** eliminamos un archivo, prueba con esto dentro de **sub_prueba**"
+        )
+        st.code("del pepe.txt\ndir")
+
 
 # ======================
 # TAB 1: WINDOWS
