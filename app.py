@@ -135,12 +135,24 @@ de archivos deben gestionar eficientemente.
 
     with col1:
         st.write("**Linux:**")
-        st.write("Para copiar un archivo a un nuevo archivo:")
-        st.code("cp archivo1 archivo2")
-        st.write("Para mover un archivo a otro directorio:")
-        st.code("mv archivo carpeta/")
-        st.write("Para eliminar un archivo:")
-        st.code("rm archivo")
+        st.write(
+            "Primero listamos con **ls** (usaremos mucho este comando ya que nos permite ver lo que hay en los directorios), allí con *mkdir* creamos una carpeta de prueba y con **touch** creamos un archivo **(ejecuta los comandos uno por uno)**"
+        )
+        st.code("ls\nmkdir prueba\ncd prueba/\ntouch pepe.txt\nls")
+        st.image("linux/crear.webp")
+        st.write("Para copiar un archivo a un nuevo archivo comenzamos con **cp**")
+        st.code("cp pepe.txt pepe1.txt")
+        st.image("linux/copiar.webp")
+        st.write(
+            "Para mover un archivo a otro directorio usamos **mv**, en este caso creamos con touch primero un subdirectorio y lo movemos"
+        )
+        st.code("mkdir sub_prueba")
+        st.image("linux/crearmover.webp")
+        st.code("mv pepe.txt sub_prueba/\ncd sub_prueba\nls")
+        st.image("linux/mover.webp")
+        st.write("Para eliminar un archivo lo hacemos con rm")
+        st.code("rm pepe.txt\nls")
+        st.image("linux/eliminar.webp")
 
     with col2:
         st.write("**Windows (CMD):**")
