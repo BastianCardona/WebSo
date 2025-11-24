@@ -254,9 +254,26 @@ Estos sistemas determinan cómo se almacenan y gestionan los datos en un disco.
         unsafe_allow_html=True,
     )
     # To do imagen de estructura windows
+    st.markdown("""
+    ### 🟦 NTFS – ¿Cómo organiza los archivos?
+
+    NTFS usa una estructura llamada **MFT (Master File Table)**.
+    La MFT es como una *gran tabla de Excel* donde cada fila representa un archivo o carpeta.
+
+    Dentro de la MFT se guarda:
+
+    - **Nombre del archivo**
+    - **Permisos**
+    - **Ubicación en el disco**
+    - **Fechas**
+    - **Atributos especiales**
+
+    Incluso los archivos pequeños pueden guardarse **dentro de la propia tabla**, lo que hace más rápido el acceso.
+
+    NTFS es muy robusto: soporta **encriptación, compresión y journaling** para evitar pérdida de datos.
+    """)
     st.subheader("Estructura del NTFS")
-    st.info("To do")
-    # st.image()
+    # st.image() TO DO
 
     st.subheader("¿Cómo puedes ver los discos desde Windows?")
     st.write("Puedes usar el Administrador de discos o ejecutar:")
@@ -289,9 +306,25 @@ Estos sistemas permiten manejo eficiente de permisos y estructura jerárquica pr
         unsafe_allow_html=True,
     )
 
+    st.markdown("""
+    ### 🟩 ext4 – ¿Cómo organiza los archivos?
+
+    En Linux, ext4 organiza la información usando **inodos**, que funcionan como pequeñas fichas donde se describe cada archivo.
+
+    Cada inodo guarda:
+
+    - **Tamaño del archivo**
+    - **Permisos**
+    - **Dueño y grupo**
+    - **Ubicación de los bloques en el disco**
+    - **Fechas de creación y modificación**
+
+    Los nombres de los archivos no van en el inodo, sino en estructuras de directorio, lo que hace que ext4 sea muy eficiente buscando y gestionando archivos.
+
+    ext4 también usa **journaling**, fragmenta muy poco y es capaz de manejar discos y archivos muy grandes, siendo uno de los sistemas más estables en Linux.
+    """)
     st.subheader("Estructura EXT4")
-    st.info("To do")
-    # st.image("")
+    # st.image("") TO DO
 
     st.subheader("📝 Ver particiones desde Linux")
     st.write("Ejecuta el siguiente comando en una terminal:")
@@ -313,34 +346,22 @@ sudo mount -t ntfs-3g /dev/sdX1 /mnt/windows
 # TAB 3: COMPARACIÓN Y COMPATIBILIDAD
 # ======================
 with tabs[3]:
-    st.header("🔀 Compatibilidad entre ambos sistemas")
-    st.markdown(
-        """
-<div class="card">
-<b>¿Linux puede leer NTFS?</b> ✔ Sí (con ntfs-3g)
-<b>¿Windows puede leer ext4?</b> ❌ No nativamente
-<b>¿Qué sistema usar para USB?</b> ✔ exFAT (compatible con ambos)
-</div>
-""",
-        unsafe_allow_html=True,
+    st.subheader("Recordemos un poco")
+    st.write(
+        "NTFS y ext4 son sistemas de archivos, es decir, la forma en que un sistema operativo organiza y guarda los datos en un disco."
     )
+    st.markdown("""
+    ### 📊 Cuadro comparativo de compatibilidad (Windows vs Linux)
 
-    st.subheader("Imagen..")
-    st.info("To do")
-    # st.image("")
-
-    st.subheader("🧪 Ejemplo: Preparar un USB compatible con ambos")
-    st.write("Puedes formatearlo en exFAT:")
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        st.write("**En Windows:**")
-        st.code("formato → seleccionar exFAT")
-
-    with col2:
-        st.write("**En Linux:**")
-        st.code("sudo mkfs.exfat /dev/sdX1")
+    | Sistema de archivos | Linux: Leer | Linux: Escribir | Windows: Leer | Windows: Escribir |
+    |--------------------|:-----------:|:---------------:|:--------------:|:------------------:|
+    | **NTFS (Windows)** | ✔ | ✔ | ✔ | ✔ |
+    | **ext4 (Linux)** | ✔ | ✔ | ❌ | ❌ |
+    | **exFAT (USB)** | ✔ | ✔ | ✔ | ✔ |
+    | **FAT32** | ✔ | ✔ | ✔ | ✔ |
+    | **Btrfs (Linux)** | ✔ | ✔ | ❌ | ❌ |
+    | **HFS+ (macOS)** | ✔ | ❌ | ❌ | ❌ |
+    """)  # Acá se ve horrible pero en la pagina sí sale bien I PROMISE.
 
 
 # ======================
