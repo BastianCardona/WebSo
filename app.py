@@ -1,50 +1,197 @@
 import streamlit as st
+from pandas.core.dtypes.dtypes import pa
 
 # ======================
 # Configuración de la página
 # ======================
-st.set_page_config(page_title="Articulación entre Sistemas de Archivos", layout="wide")
+st.set_page_config(
+    page_title="Articulación entre Sistemas de Archivos",
+    layout="wide",
+    page_icon=":computer:",
+)
 
 # ======================
-# Estilos — Modo Oscuro Premium -> Esto me lo dió chatgpt
+# Estilos — Modo Oscuro Premium Mejorado
 # ======================
 dark_theme = """
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 body {
-    background-color: #0d0f14;
+    background: linear-gradient(135deg, #0a0e1a 0%, #1a1f35 100%);
 }
 
 [data-testid="stAppViewContainer"] {
-    background-color: #0d0f14;
-    color: #e5e5e5;
-    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #0a0e1a 0%, #1a1f35 100%);
+    color: #e8eaed;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
 }
 
 [data-testid="stHeader"] {
-    background: rgba(0,0,0,0);
-    border-bottom: 1px solid rgba(255,255,255,0.08);
+    background: rgba(10, 14, 26, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(138, 180, 248, 0.15);
 }
 
 .block-container {
     padding-top: 2rem;
+    max-width: 1400px;
 }
 
 .card {
-    padding: 20px;
-    border-radius: 14px;
-    background: rgba(255,255,255,0.05);
-    backdrop-filter: blur(5px);
-    border: 1px solid rgba(255,255,255,0.1);
-    margin-bottom: 20px;
+    padding: 28px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(26, 31, 53, 0.7) 0%, rgba(15, 20, 35, 0.7) 100%);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(138, 180, 248, 0.2);
+    margin-bottom: 24px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
 }
 
-h1, h2, h3 {
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(138, 180, 248, 0.15);
+    border-color: rgba(138, 180, 248, 0.3);
+}
+
+h1 {
     color: #8ab4f8;
+    font-weight: 700;
+    font-size: 3rem !important;
+    margin-bottom: 0.5rem !important;
+    text-shadow: 0 2px 10px rgba(138, 180, 248, 0.3);
 }
 
-.tabs-container {
-    color: white !important;
+h2 {
+    color: #a8c7fa;
+    font-weight: 600;
+    margin-top: 2rem !important;
+    margin-bottom: 1rem !important;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid rgba(138, 180, 248, 0.2);
+}
+
+h3 {
+    color: #c5d7f7;
+    font-weight: 500;
+    margin-top: 1.5rem !important;
+}
+
+.stTabs [data-baseweb="tab-list"] {
+    gap: 8px;
+    background: rgba(26, 31, 53, 0.5);
+    padding: 8px;
+    border-radius: 12px;
+}
+
+.stTabs [data-baseweb="tab"] {
+    height: 50px;
+    padding: 0 24px;
+    background: rgba(138, 180, 248, 0.05);
+    border-radius: 8px;
+    color: #a8c7fa;
+    font-weight: 500;
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.stTabs [data-baseweb="tab"]:hover {
+    background: rgba(138, 180, 248, 0.1);
+    border-color: rgba(138, 180, 248, 0.3);
+}
+
+.stTabs [aria-selected="true"] {
+    background: linear-gradient(135deg, rgba(138, 180, 248, 0.2) 0%, rgba(138, 180, 248, 0.1) 100%);
+    border-color: rgba(138, 180, 248, 0.5) !important;
+    color: #8ab4f8 !important;
+}
+
+.stCodeBlock {
+    background: rgba(15, 20, 35, 0.8) !important;
+    border: 1px solid rgba(138, 180, 248, 0.2);
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+code {
+    color: #aecbfa !important;
+    background: rgba(138, 180, 248, 0.1) !important;
+    padding: 2px 6px !important;
+    border-radius: 4px !important;
+}
+
+.stImage {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(138, 180, 248, 0.1);
+    transition: all 0.3s ease;
+}
+
+.stImage:hover {
+    transform: scale(1.02);
+    box-shadow: 0 12px 32px rgba(138, 180, 248, 0.2);
+}
+
+.stMarkdown a {
+    color: #8ab4f8;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(138, 180, 248, 0.3);
+    transition: all 0.2s ease;
+}
+
+.stMarkdown a:hover {
+    color: #aecbfa;
+    border-bottom-color: #8ab4f8;
+}
+
+.stSuccess {
+    background: linear-gradient(135deg, rgba(52, 168, 83, 0.15) 0%, rgba(52, 168, 83, 0.05) 100%);
+    border: 1px solid rgba(52, 168, 83, 0.3);
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 3rem;
+}
+
+table {
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+thead th {
+    background: linear-gradient(135deg, rgba(138, 180, 248, 0.2) 0%, rgba(138, 180, 248, 0.1) 100%);
+    color: #8ab4f8;
+    font-weight: 600;
+    padding: 16px;
+    border: 1px solid rgba(138, 180, 248, 0.2);
+}
+
+tbody td {
+    background: rgba(26, 31, 53, 0.5);
+    padding: 14px;
+    border: 1px solid rgba(138, 180, 248, 0.1);
+}
+
+tbody tr:hover td {
+    background: rgba(138, 180, 248, 0.08);
+}
+
+.element-container {
+    margin-bottom: 1rem;
+}
+
+/* Animación suave al cargar */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.block-container > div {
+    animation: fadeIn 0.6s ease-out;
 }
 
 </style>
@@ -105,7 +252,7 @@ la integridad, seguridad y organización de los datos. Aquí se explican las má
 
     with colum1:
         st.markdown(
-            "**Linux**  \nLinux usa ext4 journaling.  \nPuedes ver si un disco usa journaling:"
+            "**Linux - ext4**  \nLinux usa ext4 journaling.  \nPuedes ver si un disco usa journaling:"
         )
         st.code("sudo tune2fs -l /dev/sdX1 | grep features")
         st.write(
@@ -118,6 +265,26 @@ la integridad, seguridad y organización de los datos. Aquí se explican las má
         st.code(
             "sudo mount /dev/sdX1 /mnt/test\nsudo umount -l /mnt/test\nsudo fsck /dev/sdX1"
         )
+
+        st.markdown("---")
+        st.markdown(
+            "**Linux - Btrfs**  \nBtrfs usa copy-on-write (CoW) en lugar de journaling tradicional.  \nVer información del sistema de archivos:"
+        )
+        st.code("sudo btrfs filesystem show")
+        st.write("Verificar integridad del sistema de archivos:")
+        st.code("sudo btrfs scrub start /")
+        st.write("Ver estado del scrub:")
+        st.code("sudo btrfs scrub status /")
+
+        st.markdown("---")
+        st.markdown(
+            "**Linux - ZFS**  \nZFS también usa CoW y tiene auto-reparación.  \nVer estado de los pools:"
+        )
+        st.code("sudo zpool status")
+        st.write("Verificar integridad (scrub):")
+        st.code("sudo zpool scrub nombre_pool")
+        st.write("Ver propiedades del dataset:")
+        st.code("sudo zfs get all nombre_pool/dataset")
 
     with colum2:
         st.markdown(
