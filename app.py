@@ -272,9 +272,9 @@ la integridad, seguridad y organización de los datos. Aquí se explican las má
         )
         st.code("sudo btrfs filesystem show")
         st.write("Verificar integridad del sistema de archivos:")
-        st.code("sudo btrfs scrub start /")
+        st.code("sudo btrfs scrub start /mnt/btrfs")
         st.write("Ver estado del scrub:")
-        st.code("sudo btrfs scrub status /")
+        st.code("sudo btrfs scrub status /mnt/btrfs")
 
         st.markdown("---")
         st.markdown(
@@ -439,8 +439,6 @@ Estos sistemas determinan cómo se almacenan y gestionan los datos en un disco.
 
     NTFS es muy robusto: soporta **encriptación, compresión y journaling** para evitar pérdida de datos.
     """)
-    st.subheader("Estructura del NTFS")
-    # st.image() TO DO
 
     st.subheader("¿Cómo puedes ver los discos desde Windows?")
     st.write("Puedes usar el Administrador de discos o ejecutar:")
@@ -467,6 +465,8 @@ with tabs[2]:
 - ext4 (actual y estable)
 - ext3
 - ext2
+- Btrfs (moderno, con snapshots y compresión)
+- ZFS (avanzado, con integridad de datos y pooling)
 Estos sistemas permiten manejo eficiente de permisos y estructura jerárquica propia de Linux.
 </div>
 """,
@@ -490,12 +490,45 @@ Estos sistemas permiten manejo eficiente de permisos y estructura jerárquica pr
 
     ext4 también usa **journaling**, fragmenta muy poco y es capaz de manejar discos y archivos muy grandes, siendo uno de los sistemas más estables en Linux.
     """)
-    st.subheader("Estructura EXT4")
-    # st.image("") TO DO
+
+    st.markdown("""
+    ### 🟧 Btrfs – Sistema de archivos moderno
+
+    Btrfs (B-tree File System) es un sistema de archivos avanzado que usa **copy-on-write (CoW)** en lugar de journaling tradicional.
+
+    Características principales:
+
+    - **Snapshots instantáneos** - Crea copias de respaldo sin duplicar datos
+    - **Compresión transparente** - Ahorra espacio automáticamente
+    - **Checksums** - Detecta corrupción de datos
+    - **RAID integrado** - Soporta múltiples discos sin software adicional
+    - **Subvolúmenes** - Divide el sistema de archivos en partes independientes
+
+    Btrfs es ideal para servidores y usuarios que necesitan funciones avanzadas de gestión de datos.
+    """)
+
+    st.markdown("""
+    ### 🟦 ZFS – El sistema de archivos más avanzado
+
+    ZFS (Zettabyte File System) es un sistema de archivos y administrador de volúmenes combinado, conocido por su robustez.
+
+    Características principales:
+
+    - **Integridad de datos garantizada** - Checksums en todo
+    - **Pools de almacenamiento** - Combina múltiples discos como uno solo
+    - **Auto-reparación** - Detecta y corrige errores automáticamente
+    - **Snapshots y clones** - Instantáneos eficientes y clonación rápida
+    - **Compresión y deduplicación** - Optimiza el espacio de almacenamiento
+    - **ARC (Adaptive Replacement Cache)** - Caché inteligente en RAM
+
+    ZFS es el preferido para almacenamiento empresarial, NAS y donde la integridad de datos es crítica.
+    """)
 
     st.subheader("📝 Ver particiones desde Linux")
     st.write("Ejecuta el siguiente comando en una terminal:")
     st.code("sudo fdisk -l")
+    st.write("Para ver sistemas de archivos montados:")
+    st.code("df -Th")
 
     st.subheader("📌 Montar una partición NTFS en Linux")
     st.write("Linux permite leer/escribir NTFS usando el paquete `ntfs-3g`:")
@@ -505,8 +538,31 @@ sudo apt install ntfs-3g
 sudo mount -t ntfs-3g /dev/sdX1 /mnt/windows
 """)
 
-    st.subheader("📁 Desmontar la partición")
+    st.subheader("📌 Montar una partición Btrfs")
+    st.write("Montar un sistema de archivos Btrfs:")
+    st.code("sudo mount -t btrfs /dev/sdX1 /mnt/btrfs")
+    st.write("Montar un subvolumen específico:")
+    st.code("sudo mount -t btrfs -o subvol=nombre_subvol /dev/sdX1 /mnt/btrfs")
+    st.write("Crear un snapshot:")
+    st.code("sudo btrfs subvolume snapshot /mnt/btrfs /mnt/btrfs/snapshot1")
+
+    st.subheader("📌 Montar un pool ZFS")
+    st.write("Importar un pool ZFS:")
+    st.code("sudo zpool import nombre_pool")
+    st.write("Ver pools disponibles:")
+    st.code("sudo zpool import")
+    st.write("Montar todos los datasets del pool:")
+    st.code("sudo zfs mount -a")
+    st.write("Crear un snapshot:")
+    st.code("sudo zfs snapshot nombre_pool/dataset@snapshot1")
+
+    st.subheader("📁 Desmontar particiones")
+    st.write("Para NTFS y ext4:")
     st.code("sudo umount /mnt/windows")
+    st.write("Para Btrfs:")
+    st.code("sudo umount /mnt/btrfs")
+    st.write("Para ZFS (exportar pool):")
+    st.code("sudo zpool export nombre_pool")
 
 
 # ======================
